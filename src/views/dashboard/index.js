@@ -74,6 +74,8 @@ const mapDispatchToProps = dispatch => ({
 
 const Index = (props) => {
     const [salesData, setSalesData] = useState(null);
+    const [salesDataProduct, setSalesDataProduct] = useState(null);
+
 
     const [productNames, setProductNames] = useState([]);
     const [totalQuantities, setTotalQuantities] = useState([]);
@@ -94,7 +96,119 @@ const Index = (props) => {
 
     const [sales, setSales] = useState([]);
     const [shops, setShops] = useState([]);
+    const [error, setError] = useState(null);
 
+    const [productData, setProductData] = useState([]);
+    const [generalData, setGeneralData] = useState([]);
+    const [customerData, setCustomerData] = useState([]);
+
+    const [intervalValue, setIntervalValue] = useState('general');
+
+    const handleButtonClick = (value) => {
+        setIntervalValue(value);
+        console.log('value',value);
+       
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:4023/api/sale/allCustomersBuyingHistory');
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+    
+                const data = await response.json();
+    
+                // Convert the response object into an array of objects
+                const formattedData = Object.entries(data).map(([customerId, customerData]) => ({
+                    customerId,
+                    totalAmountSpent: customerData.totalAmountSpent,
+                    shopPurchases: customerData.shopPurchases
+                }));
+    
+                // Sort the formatted data based on totalAmountSpent (highest first)
+                formattedData.sort((a, b) => b.totalAmountSpent - a.totalAmountSpent);
+    
+                setCustomerData(formattedData); // Set the formatted data to customerData
+                console.log(formattedData);
+          
+            } catch (error) {
+                setError(error.message);
+            }
+        };
+    
+        fetchData();
+    }, []);
+    
+    
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:4023/api/sale/ProductSalesRate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ interval: intervalValue }) // Change the interval as needed
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+    
+                const data = await response.json();
+                // Convert the response object into an array of objects
+                const formattedData = Object.entries(data).map(([name, { quantity, totalPrice }]) => ({
+                    name,
+                    amount: quantity,
+                    totalPrice
+                }));
+                setProductData(formattedData); // Set the formatted data to productData
+                console.log(formattedData);
+          
+            } catch (error) {
+                setError(error.message);
+            }
+        };
+    
+        fetchData();
+    }, [intervalValue]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:4023/api/sale/ProductSalesRate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ interval: 'general' }) // Change the interval as needed
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+    
+                const data = await response.json();
+                // Convert the response object into an array of objects
+                const formattedData = Object.entries(data).map(([name, { quantity, totalPrice }]) => ({
+                    name,
+                    amount: quantity,
+                    totalPrice
+                }));
+                setGeneralData(formattedData); // Set the formatted data to productData
+                console.log(formattedData);
+          
+            } catch (error) {
+                setError(error.message);
+            }
+        };
+    
+        fetchData();
+    }, []);
+    
 
 useEffect(() => {
     const fetchShopData = async () => {
@@ -161,16 +275,7 @@ useEffect(() => {
           });
       }, []);
 
-    useEffect(() => {
-        axios.get('https://nodewithsql.onrender.com/products')
-          .then((response) => {
-            setNumberOfProducts(response.data.length);
-            console.log(response.data.length); // Log the fetched totalSales value
-          })
-          .catch((error) => {
-            console.error('Error fetching data:', error);
-          });
-      }, []);
+
    
     useEffect(() => {
         axios.get('http://128.140.42.236:4023/api/sale/getWeeklySales')
@@ -229,59 +334,7 @@ useEffect(() => {
       }, []);
   
 
-    useEffect(() => {
-      // Fetch data from the API endpoint
-      axios.get('https://nodewithsql.onrender.com/productSummaryQ')
-        .then((response) => {
-          // Set the fetched data to the productSummary state variable
-          setProductSummary(response.data);
-          
-          // Calculate total sales amount
-          const calculatedTotalSalesAmount = response.data.reduce((total, product) => total + product.totalAmount, 0);
-          setTotalSalesAmount(calculatedTotalSalesAmount);
-        })
-        .catch((error) => {
-          console.error('Error fetching data:', error);
-        });
-    }, []);
     
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get('https://nodewithsql.onrender.com/productTotalQuantities'); // Assuming your API endpoint is at '/productTotalQuantities'
-          const { ProductName, TotalQuantityOrdered } = response.data;
-  
-          setProductNames(ProductName);
-          setTotalQuantities(TotalQuantityOrdered);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          // Handle error if needed
-        }
-      };
-  
-      fetchData();
-    }, []); // Empty array as a dependency to run the effect only once
-  
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://nodewithsql.onrender.com/monthlySales');
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        
-        const data = await response.json();
-        setSalesData(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
     useEffect(() => {
     AOS.init({
         startEvent: 'DOMContentLoaded',
@@ -417,75 +470,98 @@ useEffect(() => {
         },
         series: totalQuantities,
     }
-    const chart3={
-        options : {
+    const chart3 = {
+        options: {
             chart: {
-            stacked: true,
-            toolbar: {
-                show:false
+                stacked: true,
+                toolbar: {
+                    show: false
+                },
+                fontFamily: 'Arial, sans-serif',
+                background: '#ffffff',
+                foreColor: '#333333',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
                 }
             },
-            colors: [props.colorprimarymode, props.cololrinfomode],
+            colors: ['#3366CC', '#DC3912', '#FF9900'],
             plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '28%',
-                endingShape: 'rounded',
-                borderRadius: 5,
-            },
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    endingShape: 'rounded',
+                    borderRadius: 8,
+                },
             },
             legend: {
-            show: false
+                show: false
             },
             dataLabels: {
-            enabled: false
+                enabled: false
             },
             stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
+                show: true,
+                width: 2,
+                colors: ['transparent']
             },
             xaxis: {
-            categories: productNames,
-            labels: {
-                minHeight:20,
-                maxHeight:20,
-                style: {
-                colors: "#8A92A6",
-                },
-            }
+                categories: productData.map(item => item.name),
+                labels: {
+                    minHeight: 20,
+                    maxHeight: 20,
+                    style: {
+                        colors: "#666666",
+                        fontSize: '14px',
+                        fontWeight: 400,
+                    },
+                }
             },
             yaxis: {
-            title: {
-                text: ''
-            },
-            labels: {
-                minWidth: 19,
-                maxWidth: 19,
-                style: {
-                    colors: "#8A92A6",
+                title: {
+                    text: ''
                 },
-            }
+                labels: {
+                    minWidth: 19,
+                    maxWidth: 19,
+                    style: {
+                        colors: "#666666",
+                        fontSize: '14px',
+                        fontWeight: 400,
+                    },
+                }
             },
             fill: {
-            opacity: 1
+                opacity: 1
             },
             tooltip: {
-            y: {
-                formatter: function (val) {
-                return "$ " + val + ""
+                y: {
+                    formatter: function (val) {
+                        return "$ " + val + "";
+                    }
+                },
+                style: {
+                    fontSize: '14px',
+                    fontWeight: 400,
                 }
-            }
             }
         },
         series: [{
-            name: 'Successful deals',
-            // data: [40, 50, 55, 50, 30, 80, 30, 40, 50, 55],
-            data:[2,58,35,3,10,5,15,16,0,0]
-        }
-      
-    ]
-    }
+            name: 'Amount Sold',
+            data: productData.map(item => item.totalPrice)
+        }]
+    };
+    
+    
         return (
             <>
                 <Row>
@@ -585,7 +661,7 @@ useEffect(() => {
                                             </div>
                                         </div>
                                     </SwiperSlide>
-                                    <SwiperSlide className=" card card-slide" >
+                                    {/* <SwiperSlide className=" card card-slide" >
                                         <div className="card-body">
                                             <div className="progress-widget">
                                                     <Circularprogressbar stroke={props.cololrinfomode} width="60px" height="60px" trailstroke='#ddd' Linecap='rounded' strokewidth="4px" value={40}  style={{width:60, height:60,}} id="circle-progress-06">
@@ -599,7 +675,7 @@ useEffect(() => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </SwiperSlide>
+                                    </SwiperSlide> */}
                                     <SwiperSlide className=" card card-slide">
                                         <div className="card-body">
                                             <div className="progress-widget">
@@ -727,16 +803,19 @@ useEffect(() => {
                                         <div className="header-title">
                                             <h4 className="card-title">Sales By Products</h4>            
                                         </div>
-                                        <Dropdown>
-                                            <Dropdown.Toggle as={Button} href="#" variant=" text-secondary" id="dropdownMenuButton3" aria-expanded="false">
-                                                This Week
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton3">
-                                                <li><Dropdown.Item href="#">This Week</Dropdown.Item></li>
-                                                <li><Dropdown.Item href="#">This Month</Dropdown.Item></li>
-                                                <li><Dropdown.Item href="#">This Year</Dropdown.Item></li>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                                        <Button href="#" variant="text-secondary" onClick={() => handleButtonClick('today')}>
+                Today
+            </Button>
+            <Button href="#" variant="text-secondary" onClick={() => handleButtonClick('weekly')}>
+                This Week
+            </Button>
+            <Button href="#" variant="text-secondary" onClick={() => handleButtonClick('monthly')}>
+                This Month
+            </Button>
+            <Button href="#" variant="text-secondary" onClick={() => handleButtonClick('general')}>
+                Whole
+            </Button>
+
                                     </div>
                                     <div className="card-body">
                                         <Chart className="d-activity" options={chart3.options} series={chart3.series} type="bar"   height="230"  />
@@ -768,27 +847,72 @@ useEffect(() => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-  {productSummary.map((product, index) => (
-    <tr key={index}>
-      <td>
-        <div className="d-flex align-items-center">
-          {/* Replace this with your image source */}
-          {/* <img className="rounded bg-soft-primary img-fluid avatar-40 me-3" src={} alt="profile"/> */}
-          <h6>{product.productName}</h6>
-        </div>
-      </td>
-      {/* Additional columns based on your data */}
-      <td>${product.totalQuantity}</td>
-      <td>
-        <div className="mb-2 d-flex align-items-center">
-          <h6>${product.totalAmount}</h6> {/* Calculate the percentage based on your requirement */}
-        </div>
-        {/* Replace this with your progress component */}
-        <Progress softcolors="primary" color="primary" className="shadow-none w-100" value={(product.totalAmount / maxAmount) * 100} minvalue={0} maxvalue={100} style={{ height: "4px" }} />
-      </td>
-    </tr>
-  ))}
-</tbody>
+                                        {generalData.map((product, index) => (
+                                            <tr key={index}>
+                                            <td>
+                                                <div className="d-flex align-items-center">
+                                                  <h6>{product.name}</h6>
+                                                </div>
+                                            </td>
+                                   
+                                            <td>{product.amount}</td>
+                                            <td>
+                                                <div className="mb-2 d-flex align-items-center">
+                                                <h6>ETB {product.totalPrice}</h6> {/* Calculate the percentage based on your requirement */}
+                                                </div>
+                                                 <Progress softcolors="primary" color="primary" className="shadow-none w-100" value={(product.totalAmount / maxAmount) * 100} minvalue={0} maxvalue={100} style={{ height: "4px" }} />
+                                            </td>
+                                            </tr>
+                                        ))}
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div className="flex-wrap card-header d-flex justify-content-between">
+                                        <div className="header-title">
+                                            <h4 className="mb-2 card-title"> Top Shops </h4>
+                                            <p className="mb-0">
+                                                <svg className ="me-2" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path fill="#3a57e8" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                                </svg>
+                                                Top Shops 
+                                            </p>            
+                                        </div>
+                                    </div>
+                                    <div className="p-0 card-body">
+                                        <div className="mt-4 table-responsive">
+                                            <table id="basic-table" className="table mb-0 table-striped" role="grid">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Shop Code</th>
+                                                        <th>Shop Name</th>
+                                                        {/* <th>productCode</th> */}
+                                                        <th>Total Amount of Money Spent</th>
+                                                    
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {customerData.map((product, index) => (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <div className="d-flex align-items-center">
+                                                                {/* <img className="rounded bg-soft-primary img-fluid avatar-40 me-3" src={} alt="profile"/> */}
+                                                                <h6>{product.shopPurchases[Object.keys(product.shopPurchases)[0]].shopCode}</h6>
+                                                            </div>
+                                                        </td>
+                                                        {/* Additional columns based on your data */}
+                                                        <td>{product.shopPurchases[Object.keys(product.shopPurchases)[0]].shopCode}</td>
+                                                        <td>
+                                                            <div className="mb-2 d-flex align-items-center">
+                                                                <h6>ETB {product.totalAmountSpent}</h6>
+                                                            </div>
+                                                            {/* Replace this with your progress component */}
+                                                            {/* Progress component using product.totalAmount */}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+
+                                            </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -815,7 +939,7 @@ useEffect(() => {
                                                 <div key={index} className="mb-2 d-flex profile-media align-items-top">
                                                 <div className="mt-1 profile-dots-pills border-primary"></div>
                                                 <div className="ms-4">
-                                                    <h6 className="mb-1">${sale.totalPrice}, {sale.shopInfo.shopName}</h6>
+                                                    <h6 className="mb-1">ETB {sale.totalPrice}, {sale.shopInfo.shopName}</h6>
                                                     <span className="mb-0">{sale.saleCode}</span>
                                                 </div>
                                                 </div>
