@@ -4,7 +4,7 @@ const http = axios.create({
   baseURL: "",
   Headers: {},
 });
-export const baseUrl = "http://128.140.42.236:4023";
+export const baseUrl = "https://alhusengeneralimportandexport.com";
 try {
   http.interceptors.request.use(
     (config) => {

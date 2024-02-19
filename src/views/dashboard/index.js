@@ -112,7 +112,7 @@ const Index = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:4023/api/sale/allCustomersBuyingHistory');
+                const response = await fetch('https://alhusengeneralimportandexport.com/api/sale/allCustomersBuyingHistory');
     
                 if (!response.ok) {
                     throw new Error('Failed to fetch data');
@@ -146,7 +146,7 @@ const Index = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:4023/api/sale/ProductSalesRate', {
+                const response = await fetch('https://alhusengeneralimportandexport.com/api/sale/ProductSalesRate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -179,7 +179,7 @@ const Index = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:4023/api/sale/ProductSalesRate', {
+                const response = await fetch('https://alhusengeneralimportandexport.com/api/sale/ProductSalesRate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -213,7 +213,7 @@ const Index = (props) => {
 useEffect(() => {
     const fetchShopData = async () => {
         try {
-            const response = await fetch('http://128.140.42.236:4023/api/shop/getAll');
+            const response = await fetch('https://alhusengeneralimportandexport.com/api/shop/getAll');
             const data = await response.json();
             if (data && data.status === 'success') {
                 // Assuming 'shops' is the array containing shop data
@@ -234,7 +234,7 @@ useEffect(() => {
     useEffect(() => {
       const fetchSales = async () => {
         try {
-          const response = await fetch('http://128.140.42.236:4023/api/sale/getAllSales');
+          const response = await fetch('https://alhusengeneralimportandexport.com/api/sale/getAllSales');
           if (response.ok) {
             const data = await response.json();
             // Assuming data is an array of sales objects with relevant fields
@@ -255,7 +255,7 @@ useEffect(() => {
       fetchSales();
     }, []);
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getAllSales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getAllSales')
           .then((response) => {
             setNumberOfOrders(response.data.length);
             //console.log('Shop',response.data.length); // Log the fetched totalSales value
@@ -265,7 +265,7 @@ useEffect(() => {
           });
       }, []);
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/shop/getAll')
+        axios.get('https://alhusengeneralimportandexport.com/api/shop/getAll')
           .then((response) => {
             setNumberOfShops(response.data.shops.length);
             console.log('Shop',response.data.shops.length); // Log the fetched totalSales value
@@ -278,7 +278,7 @@ useEffect(() => {
 
    
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getWeeklySales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getWeeklySales')
           .then((response) => {
             setWeeklySales(response.data.weeklySales);
             console.log(response.data.weeklySales); // Log the fetched totalSales value
@@ -288,7 +288,7 @@ useEffect(() => {
           });
       }, []);
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getTodaySales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getTodaySales')
           .then((response) => {
             setTodaySales(response.data.todaySales);
             console.log(response.data.todaySales); // Log the fetched totalSales value
@@ -299,7 +299,7 @@ useEffect(() => {
       }, []);
 
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getCurrentMonthTotalSales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getCurrentMonthTotalSales')
           .then((response) => {
             setTotalMonthlySales(response.data.currentMonthTotalSales);
             console.log(response.data.currentMonthTotalSales); // Log the fetched totalSales value
@@ -310,7 +310,7 @@ useEffect(() => {
       }, []);
 
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getMonthlySales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getMonthlySales')
           .then((response) => {
             setTotalSalesMonthlyAmount(response.data.monthlySales);
             console.log(response.data.monthlySales); // Log the fetched totalSales value
@@ -323,7 +323,7 @@ useEffect(() => {
 
 
     useEffect(() => {
-        axios.get('http://128.140.42.236:4023/api/sale/getTotalSales')
+        axios.get('https://alhusengeneralimportandexport.com/api/sale/getTotalSales')
           .then((response) => {
             setTotalSales(response.data.totalSales);
             console.log(response.data.totalSales); // Log the fetched totalSales value
