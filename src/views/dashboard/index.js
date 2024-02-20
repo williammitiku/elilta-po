@@ -109,6 +109,23 @@ const Index = (props) => {
         console.log('value',value);
        
     };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://alhusengeneralimportandexport.com/api/item/getAll');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setNumberOfProducts(data.length);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -1018,7 +1035,7 @@ useEffect(() => {
                                                 </div>
                                                 <div className="ms-3">
                                                 <h5>{numberOfProducts}</h5>
-                                                <small className="mb-0">Products</small>
+                                                <small className="mb-0">Producsssts</small>
                                                 </div>
                                             </div>
                                             <div className="d-flex align-itmes-center">

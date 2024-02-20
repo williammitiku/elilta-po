@@ -26,14 +26,14 @@ export default function Requests() {
 
   const DisplayData = data
     ?.filter((sale) =>
-      sale.saleCode.toLowerCase().includes(searchValue.toLowerCase())
+      sale.shopInfo.shopName.toLowerCase().includes(searchValue.toLowerCase())
     )
     ?.slice(pagesVisited, pagesVisited + usersPerPage)
     .map((sale) => {
       return (
         <tr key={sale._id}>
           <td className="px-6 py-3">{sale.saleCode}</td>
-          <td className="px-6 py-3">{sale.soldTo}</td>
+          <td className="px-6 py-3">{sale.shopInfo.shopName}</td>
           <td className="px-6 py-3">
             <ul>
               {sale.products.map((product) => (
@@ -49,7 +49,7 @@ export default function Requests() {
     });
 
   return (
-    <div className="container mt-6">
+    <div>
       <Card>
         <h2 className="mb-3">Sold</h2>
         
@@ -57,7 +57,7 @@ export default function Requests() {
           <Col md={6}>
             <Form.Control
               type="text"
-              placeholder="Search by Sale Code"
+              placeholder="Search by Shop Name"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -69,7 +69,7 @@ export default function Requests() {
             <thead>
               <tr>
                 <th>Sale Code</th>
-                <th>Sold To</th>
+                <th>Shop Name</th>
                 <th>Products</th>
                 <th>Total Price</th>
               </tr>
