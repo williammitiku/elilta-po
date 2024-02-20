@@ -63,8 +63,7 @@ const DriverAdd = () => {
   
   const emailValidationRegx =
     /^[a-zA-Z0-9.! #$%&'*+/=? ^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+    const phoneRegExp = /^(7|9)\d{8}$/;
   const validateForm = () => {
     const {
       pcode="",
@@ -84,10 +83,10 @@ const DriverAdd = () => {
     if (!phoneRegExp.test(phone)) newErrors.phone = "Phone number is Invalid"; //phone validation
     if (!phone || phone === "")
       newErrors.phone = "Phone Input, number Can't be blank.";
-      if (phone.length < 10)
+      if (phone.length < 9)
       newErrors.phone = "Invalid Input, Phone Number can't be less 10 digits";
 
-      if (phone.length > 10)
+      if (phone.length > 9)
       newErrors.phone = "Invalid Phone Number can't be more 10 digits";
     if (!firstName || firstName === "")
       newErrors.firstName = "First Name Can't be be blank.";
@@ -102,14 +101,14 @@ const DriverAdd = () => {
       
     if (!password || password === "")
       newErrors.password = "Password value Can't be blank";
-      if (password.length < 8)
-      newErrors.password = "Password  Can't be less than 8";
+      if (password.length < 6)
+      newErrors.password = "Password  Can't be less than 6";
     if (!nationalId || nationalId === "")
       newErrors.nationalId = "National ID value Can't be blank";
-      if (nationalId.length > 13)
-      newErrors.nationalId = "National ID Can't be more than 13";
-      if (nationalId.length < 13)
-      newErrors.nationalId = "National ID Can't be less than 13";
+      if (nationalId.length > 3)
+      newErrors.nationalId = "National ID Can't be more than 3";
+      if (nationalId.length < 3)
+      newErrors.nationalId = "National ID Can't be less than 3";
         return newErrors;
   };
   const ClearContent = () => {
@@ -135,7 +134,7 @@ const DriverAdd = () => {
             middleName: form.middleName,
             lastName: form.lastName,
             email: form.email,
-            phoneNumber: form.pcode + form.phone,
+            phoneNumber:  form.phone,
             password: form.password,
             nationalId: form.nationalId,
             profileImage:baseImage,
@@ -159,7 +158,7 @@ const DriverAdd = () => {
             <Card>
               <Card.Header className="d-flex justify-content-between">
                 <div className="header-title">
-                  <h4 className="card-title">Add New Driver </h4>
+                  <h4 className="card-title">Add New Sales </h4>
                 </div>
               </Card.Header>
               <Card.Body>
@@ -355,7 +354,7 @@ const DriverAdd = () => {
                       onClick={(e) => onSubmit(e)}
                       variant="btn btn-primary"
                     >
-                      Add New Driver
+                      Add New Sales
                     </Button>
              
                     {showSuccess ? (
@@ -363,7 +362,7 @@ const DriverAdd = () => {
                         className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
                         role="alert"
                       >
-                        <span className="font-medium">Driver Registered Successfully!</span>{" "}
+                        <span className="font-medium">Sales Registered Successfully!</span>{" "}
                         Completed,
                       </div>
                     ) : null}
