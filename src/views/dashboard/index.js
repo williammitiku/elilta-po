@@ -901,7 +901,7 @@ useEffect(() => {
                                                             </div>
                                                         </td>
                                                         {/* Additional columns based on your data */}
-                                                        <td>{product.shopPurchases[Object.keys(product.shopPurchases)[0]].shopCode}</td>
+                                                        <td>{product.shopPurchases[Object.keys(product.shopPurchases)[0]].shopName}</td>
                                                         <td>
                                                             <div className="mb-2 d-flex align-items-center">
                                                                 <h6>ETB {product.totalAmountSpent}</h6>
