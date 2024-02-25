@@ -100,6 +100,7 @@ const Index = (props) => {
 
     const [productData, setProductData] = useState([]);
     const [generalData, setGeneralData] = useState([]);
+    const [salesStatData, setSalesStatData] = useState([]);
     const [customerData, setCustomerData] = useState([]);
 
     const [intervalValue, setIntervalValue] = useState('general');
@@ -271,6 +272,32 @@ useEffect(() => {
   
       fetchSales();
     }, []);
+
+    
+    useEffect(() => {
+        const fetchSales = async () => {
+          try {
+            const response = await fetch('http://localhost:4023/api/sale/salespersonPerformance');
+            if (response.ok) {
+              const data = await response.json();
+              // Assuming data is an array of sales objects with relevant fields
+              data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+              // Get the last six sales
+              const lastSixSaless = data.slice(0, 5);
+              setSalesStatData(lastSixSaless);
+              console.log('Sales', lastSixSaless);
+            } else {
+              throw new Error('Failed to fetch data');
+            }
+          } catch (error) {
+            console.error('Error fetching data:', error);
+            // Handle errors or set an appropriate state to indicate the error
+          }
+        };
+    
+        fetchSales();
+      }, []);
     useEffect(() => {
         axios.get('https://alhusengeneralimportandexport.com/api/sale/getAllSales')
           .then((response) => {
@@ -841,7 +868,56 @@ useEffect(() => {
                             </Col>         
                             <Col md="12" lg="12">
                                 <div className="overflow-hidden card" data-aos="fade-up" data-aos-delay="600">
+
+
                                     <div className="flex-wrap card-header d-flex justify-content-between">
+
+                                    <div className="flex-wrap card-header d-flex justify-content-between">
+                                        <div className="header-title">
+                                            <h4 className="mb-2 card-title">Sales Officers Performance</h4>
+                                               
+                                        </div>
+                                    </div>
+                                    <div className="p-0 card-body">
+                                        <div className="mt-4 table-responsive">
+                                            <table id="basic-table" className="table mb-0 table-striped" role="grid">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sales Person</th>
+                                                        {/* <th>productCode</th> */}
+                                                        <th>Total Count of Sales</th>
+                                                        <th>Total Amount of Sales in ETB</th>
+                                                        <th>Rank</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                        {salesStatData.map((product, index) => (
+                                            <tr key={index}>
+                                            <td>
+                                                <div className="d-flex align-items-center">
+                                                  <h6>{product._id}</h6>
+                                                </div>
+                                            </td>
+                                   
+                                            <td>{product.totalQuantity}</td>
+                                            <td>
+                                                <div className="mb-2 d-flex align-items-center">
+                                                <h6>ETB {product.totalPrice}</h6> {/* Calculate the percentage based on your requirement */}
+                                                </div>
+                                                 <Progress softcolors="primary" color="primary" className="shadow-none w-100" value={(product.totalAmount / maxAmount) * 100} minvalue={0} maxvalue={100} style={{ height: "4px" }} />
+                                            </td>
+                                            <td>
+                                                <div className="mb-2 d-flex align-items-center">
+                                                <h6>{product.rank}</h6> {/* Calculate the percentage based on your requirement */}
+                                                </div>
+                                                 <Progress softcolors="primary" color="primary" className="shadow-none w-100" value={(product.totalAmount / maxAmount) * 100} minvalue={0} maxvalue={100} style={{ height: "4px" }} />
+                                            </td>
+                                            </tr>
+                                        ))}
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                         <div className="header-title">
                                             <h4 className="mb-2 card-title">Elilta Sales Trading Sc</h4>
                                             <p className="mb-0">
@@ -885,6 +961,8 @@ useEffect(() => {
                                             </table>
                                         </div>
                                     </div>
+
+                                    
                                     <div className="flex-wrap card-header d-flex justify-content-between">
                                         <div className="header-title">
                                             <h4 className="mb-2 card-title"> Top Shops </h4>
@@ -933,6 +1011,7 @@ useEffect(() => {
                                             </table>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </Col>
                         </Row>
